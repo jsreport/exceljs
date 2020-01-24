@@ -93,9 +93,11 @@
     "fast-csv": "^3.4.0",
     "jszip": "^3.1.5",
     "sax": "^1.2.4",
+    "streamifier": "0.1.1",
     "tmp": "^0.1.0",
     "unzipper": "^0.9.12",
-    "uuid": "^3.3.3"
+    "uuid": "^3.3.3",
+    "xmldom": "0.2.1"
   },
   "devDependencies": {
     "@babel/cli": "^7.6.4",
