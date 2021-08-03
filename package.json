@@ -51,17 +51,6 @@
     "preversion": "npm run clean && npm run build && npm run test:all && npm run test:dist",
     "postversion": "git push --no-verify && git push --tags --no-verify"
   },
-  "husky": {
-    "hooks": {
-      "pre-commit": "lint-staged"
-    }
-  },
-  "lint-staged": {
-    "*.js": [
-      "eslint --format node_modules/eslint-friendly-formatter",
-      "git add"
-    ]
-  },
   "keywords": [
     "xlsx",
     "json",
@@ -88,7 +77,7 @@
     "pageSetup"
   ],
   "dependencies": {
-    "archiver": "^3.0.0",
+    "archiver": "5.3.0",
     "dayjs": "^1.8.15",
     "fast-csv": "^3.4.0",
     "jszip": "^3.1.5",
