@@ -1,56 +1,8 @@
 {
   "name": "jsreport-exceljs",
   "version": "3.8.0",
-  "description": "Excel Workbook Manager - Read and Write xlsx and csv Files.",
   "private": false,
-  "license": "MIT",
-  "author": {
-    "name": "Guyon Roche",
-    "email": "guyon@live.com"
-  },
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/exceljs/exceljs.git"
-  },
-  "engines": {
-    "node": ">=8.3.0"
-  },
-  "main": "./lib/exceljs.nodejs.js",
-  "browser": "./dist/exceljs.min.js",
-  "types": "./index.d.ts",
-  "files": [
-    "dist",
-    "lib",
-    "LICENSE",
-    "README.md",
-    "index.d.ts"
-  ],
-  "scripts": {
-    "test": "npm run test:full",
-    "test:full": "npm run test:unit && npm run test:integration && npm run test:end-to-end && npm run test:browser",
-    "test:all": "npm run test:native && npm run test:es5",
-    "test:native": "npm run test:full",
-    "test:es5": "export EXCEL_BUILD=es5 && npm run test:full",
-    "test:unit": "mocha --require spec/config/setup --require spec/config/setup-unit spec/unit --recursive",
-    "test:integration": "mocha --require spec/config/setup spec/integration --recursive",
-    "test:end-to-end": "mocha --require spec/config/setup spec/end-to-end --recursive",
-    "test:browser": "if [ ! -f .disable-test-browser ]; then npm run test:jasmine; fi",
-    "test:jasmine": "npm run build && grunt jasmine",
-    "test:unit:es5": "export EXCEL_BUILD=es5 && npm run test:unit",
-    "test:integration:es5": "export EXCEL_BUILD=es5 && npm run test:integration",
-    "test:end-to-end:es5": "export EXCEL_BUILD=es5 && npm run test:end-to-end",
-    "test:dist": "mocha --require spec/config/setup spec/dist --recursive",
-    "test:manual": "node spec/manual/app.js",
-    "clean-build": "npm run clean && npm run build",
-    "lint": "eslint --format node_modules/eslint-friendly-formatter .",
-    "lint:fix": "prettier-eslint --write \"**/*.js\"",
-    "lint:staged": "lint-staged",
-    "clean": "rm -rf build/ && rm -rf dist",
-    "patch:fast-csv": "node _patch-fast-csv.js",
-    "build": "npm run patch:fast-csv && grunt build",
-    "preversion": "npm run clean && npm run build && npm run test:all && npm run test:dist",
-    "postversion": "git push --no-verify && git push --tags --no-verify"
-  },
+  "description": "Excel Workbook Manager - Read and Write xlsx and csv Files.",
   "keywords": [
     "xlsx",
     "json",
@@ -76,8 +28,54 @@
     "split",
     "pageSetup"
   ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/exceljs/exceljs.git"
+  },
+  "license": "MIT",
+  "author": {
+    "name": "Guyon Roche",
+    "email": "guyon@live.com"
+  },
+  "main": "./lib/exceljs.nodejs.js",
+  "browser": "./dist/exceljs.min.js",
+  "types": "./index.d.ts",
+  "files": [
+    "dist",
+    "lib",
+    "LICENSE",
+    "README.md",
+    "index.d.ts"
+  ],
+  "scripts": {
+    "build": "npm run patch:fast-csv && grunt build",
+    "clean": "rm -rf build/ && rm -rf dist",
+    "clean-build": "npm run clean && npm run build",
+    "lint": "eslint --format node_modules/eslint-friendly-formatter .",
+    "lint:fix": "prettier-eslint --write \"**/*.js\"",
+    "lint:staged": "lint-staged",
+    "patch:fast-csv": "node _patch-fast-csv.js",
+    "test": "npm run test:full",
+    "test:all": "npm run test:native && npm run test:es5",
+    "test:browser": "if [ ! -f .disable-test-browser ]; then npm run test:jasmine; fi",
+    "test:dist": "mocha --require spec/config/setup spec/dist --recursive",
+    "test:end-to-end": "mocha --require spec/config/setup spec/end-to-end --recursive",
+    "test:end-to-end:es5": "export EXCEL_BUILD=es5 && npm run test:end-to-end",
+    "test:es5": "export EXCEL_BUILD=es5 && npm run test:full",
+    "test:full": "npm run test:unit && npm run test:integration && npm run test:end-to-end && npm run test:browser",
+    "test:integration": "mocha --require spec/config/setup spec/integration --recursive",
+    "test:integration:es5": "export EXCEL_BUILD=es5 && npm run test:integration",
+    "test:jasmine": "npm run build && grunt jasmine",
+    "test:manual": "node spec/manual/app.js",
+    "test:native": "npm run test:full",
+    "test:unit": "mocha --require spec/config/setup --require spec/config/setup-unit spec/unit --recursive",
+    "test:unit:es5": "export EXCEL_BUILD=es5 && npm run test:unit",
+    "preversion": "npm run clean && npm run build && npm run test:all && npm run test:dist",
+    "postversion": "git push --no-verify && git push --tags --no-verify"
+  },
   "dependencies": {
-    "archiver": "5.3.0",
+    "@xmldom/xmldom": "0.7.0",
+    "archiver": "5.3.1",
     "dayjs": "^1.8.15",
     "fast-csv": "4.3.6",
     "jszip": "3.7.1",
@@ -85,8 +83,7 @@
     "streamifier": "0.1.1",
     "tmp": "^0.1.0",
     "unzipper": "0.10.11",
-    "uuid": "^3.3.3",
-    "@xmldom/xmldom": "0.7.0"
+    "uuid": "^3.3.3"
   },
   "devDependencies": {
     "@babel/cli": "^7.6.4",
@@ -124,5 +121,8 @@
     "request": "^2.88.0",
     "semver": "^5.6.0",
     "uglify-js": "^3.4.9"
+  },
+  "engines": {
+    "node": ">=8.3.0"
   }
 }
