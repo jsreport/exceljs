@@ -75,7 +75,7 @@
   },
   "dependencies": {
     "@xmldom/xmldom": "0.8.6",
-    "archiver": "5.3.1",
+    "archiver": "7.0.1",
     "dayjs": "^1.8.15",
     "fast-csv": "4.3.6",
     "jszip": "3.8.0",
@@ -123,6 +123,6 @@
     "uglify-js": "^3.4.9"
   },
   "engines": {
-    "node": ">=8.3.0"
+    "node": ">=18.15.0"
   }
 }
