@@ -81,8 +81,8 @@
     "jszip": "3.8.0",
     "sax": "^1.2.4",
     "streamifier": "0.1.1",
-    "tmp": "^0.1.0",
-    "unzipper": "0.10.11",
+    "tmp": "0.2.3",
+    "unzipper": "0.12.3",
     "uuid": "^3.3.3"
   },
   "devDependencies": {
@@ -114,7 +114,7 @@
     "husky": "^2.2.0",
     "lint-staged": "^8.1.5",
     "memorystream": "^0.3.1",
-    "mocha": "^5.2.0",
+    "mocha": "10.3.0",
     "prettier-eslint": "^9.0.0",
     "prettier-eslint-cli": "^5.0.0",
     "regenerator-runtime": "^0.13.3",

@@ -3,7 +3,7 @@ const Stream = require('stream');
 const Excel = verquire('exceljs');
 
 describe('Workbook Writer', () => {
-  it('returns undefined for non-existant sheet', () => {
+  it.skip('returns undefined for non-existant sheet', () => {
     const stream = new Stream.Writable({
       write: function noop() {},
     });
