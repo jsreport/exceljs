@@ -166,6 +166,27 @@ const its = {
         xform
           .parse(parseSax(stream))
           .then(model => {
+            // eliminate the props we have added to our fork
+            if (model && model.stylesXfs) {
+              delete model.stylesXfs;
+            }
+
+            if (model && model.cellStyleXfs) {
+              delete model.cellStyleXfs;
+            }
+
+            if (model && model.cellStyles) {
+              delete model.cellStyles;
+            }
+
+            if (model && model.colors && model.colors.length === 0) {
+              delete model.colors;
+            }
+
+            if (model && model.dxfs && model.dxfs.length === 0) {
+              delete model.dxfs;
+            }
+
             // eliminate the undefined
             const clone = cloneDeep(model, false);
 
