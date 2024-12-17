@@ -1,3 +1,6 @@
+**⚠️ This repository has been moved to the monorepo [jsreport/jsreport](https://github.com/jsreport/jsreport)**
+--
+
 # ExcelJS
 
 Read, manipulate and write spreadsheet data and styles to XLSX and JSON.
