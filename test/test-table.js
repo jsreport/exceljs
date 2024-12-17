@@ -1,4 +1,4 @@
-const Excel = require('../lib/exceljs.nodejs.js');
+const Excel = require('../lib/exceljs.nodejs');
 const HrStopwatch = require('./utils/hr-stopwatch');
 
 const [, , filename] = process.argv;
@@ -7,15 +7,29 @@ const wb = new Excel.Workbook();
 const ws = wb.addWorksheet('Foo');
 
 const now = new Date();
-const today = Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDay());
+const today = Date.UTC(
+  now.getUTCFullYear(),
+  now.getUTCMonth(),
+  now.getUTCDay()
+);
 
-ws.columns = [
-  {key: 'date', width: 32},
-  {key: 'number'},
-  {key: 'word'},
+ws.columns = [{key: 'date', width: 32}, {key: 'number'}, {key: 'word'}];
+
+const words = [
+  'Twas',
+  'brillig',
+  'and',
+  'the',
+  'slithy',
+  'toves',
+  'did',
+  'gyre',
+  'and',
+  'gimble',
+  'in',
+  'the',
+  'wabe',
 ];
-
-const words = ['Twas', 'brillig', 'and', 'the', 'slithy', 'toves', 'did', 'gyre', 'and', 'gimble', 'in', 'the', 'wabe'];
 
 ws.addTable({
   name: 'TestTable',
@@ -28,10 +42,23 @@ ws.addTable({
   },
   columns: [
     {name: 'Date', totalsRowLabel: 'Totally', filterButton: true},
-    {name: 'Id', totalsRowFunction: 'max', filterButton: true, totalsRowResult: 8},
-    {name: 'Word', filterButton: false, style: {font: {bold: true, name: 'Comic Sans MS'}}},
+    {
+      name: 'Id',
+      totalsRowFunction: 'max',
+      filterButton: true,
+      totalsRowResult: 8,
+      style: {numFmt: '0.00%'},
+    },
+    {
+      name: 'Word',
+      filterButton: false,
+      style: {font: {bold: true, name: 'Comic Sans MS'}},
+    },
   ],
-  rows: words.map((word, i) => ([new Date(+today + (86400 * i)), i, word])),
+  rows: words.map((word, i) => {
+    const additionalDays = 86400 * i;
+    return [new Date(today + additionalDays), i, word];
+  }),
 });
 
 const stopwatch = new HrStopwatch();

@@ -48,7 +48,11 @@ describe('WorkbookWriter', () => {
       };
       const wb = new ExcelJS.stream.xlsx.WorkbookWriter(options);
       const ws = wb.addWorksheet('Hello');
-      ws.getCell('A1').value = {formula: 'ROW()+COLUMN()', ref: 'A1:B2', result: 2};
+      ws.getCell('A1').value = {
+        formula: 'ROW()+COLUMN()',
+        ref: 'A1:B2',
+        result: 2,
+      };
       ws.getCell('B1').value = {sharedFormula: 'A1', result: 3};
       ws.getCell('A2').value = {sharedFormula: 'A1', result: 3};
       ws.getCell('B2').value = {sharedFormula: 'A1', result: 4};
@@ -204,7 +208,7 @@ describe('WorkbookWriter', () => {
           expect(ws2.getColumn(2).alignment).to.deep.equal(
             testUtils.styles.namedAlignments.middleCentre
           );
-          expect(ws2.getColumn(2).width).to.equal(undefined);
+          expect(ws2.getColumn(2).width).to.equal(9);
 
           expect(ws2.getColumn(4).width).to.equal(undefined);
 
@@ -392,7 +396,7 @@ describe('WorkbookWriter', () => {
         filename: TEST_XLSX_FILE_NAME,
         useStyles: true,
         zip: {
-          zlib: {level: 9},// Sets the compression level.
+          zlib: {level: 9}, // Sets the compression level.
         },
       };
       const wb = testUtils.createTestBook(
@@ -424,10 +428,24 @@ describe('WorkbookWriter', () => {
       const note = {
         texts: [
           {
-            font: {size: 12, color: {argb: 'FFFF6600'}, name: 'Calibri', scheme: 'minor'},
+            font: {
+              size: 12,
+              color: {argb: 'FFFF6600'},
+              name: 'Calibri',
+              scheme: 'minor',
+            },
             text: 'seven',
           },
         ],
+        margins: {
+          insetmode: 'auto',
+          inset: [0.13, 0.13, 0.25, 0.25],
+        },
+        protection: {
+          locked: 'True',
+          lockText: 'True',
+        },
+        editAs: 'twoCells',
       };
       ws.getCell('D2').value = 7;
       ws.getCell('D2').note = note;
@@ -440,9 +458,59 @@ describe('WorkbookWriter', () => {
 
       expect(ws2.getCell('B2').value).to.equal(5);
       expect(ws2.getCell('B2').note).to.equal('five');
+      expect(ws2.getCell('D2').value).to.equal(7);
+      expect(ws2.getCell('D2').note.texts).to.deep.equal(note.texts);
+      expect(ws2.getCell('D2').note.margins).to.deep.equal(note.margins);
+      expect(ws2.getCell('D2').note.protection).to.deep.equal(note.protection);
+      expect(ws2.getCell('D2').note.editAs).to.deep.equal(note.editAs);
+    });
+
+    it('Cell annotation supports setting margins and protection properties', async () => {
+      const options = {
+        filename: TEST_XLSX_FILE_NAME,
+      };
+      const wb = new ExcelJS.stream.xlsx.WorkbookWriter(options);
+      const ws = wb.addWorksheet('Hello');
+      ws.getCell('B2').value = 5;
+      ws.getCell('B2').note = 'five';
+      const note = {
+        texts: [
+          {
+            font: {
+              size: 12,
+              color: {argb: 'FFFF6600'},
+              name: 'Calibri',
+              scheme: 'minor',
+            },
+            text: 'seven',
+          },
+        ],
+        margins: {
+          insetmode: 'custom',
+          inset: [0.25, 0.25, 0.35, 0.35],
+        },
+        protection: {
+          locked: 'False',
+          lockText: 'False',
+        },
+        editAs: 'oneCells',
+      };
+      ws.getCell('D2').value = 7;
+      ws.getCell('D2').note = note;
+
+      await wb.commit();
+
+      const wb2 = new ExcelJS.Workbook();
+      await wb2.xlsx.readFile(TEST_XLSX_FILE_NAME);
+      const ws2 = wb2.getWorksheet('Hello');
+      expect(ws2.getCell('B2').value).to.equal(5);
+      expect(ws2.getCell('B2').note).to.equal('five');
 
       expect(ws2.getCell('D2').value).to.equal(7);
-      expect(ws2.getCell('D2').note).to.deep.equal(note);
+      expect(ws2.getCell('D2').note.texts).to.deep.equal(note.texts);
+      expect(ws2.getCell('D2').note.margins).to.deep.equal(note.margins);
+      expect(ws2.getCell('D2').note.protection).to.deep.equal(note.protection);
+      expect(ws2.getCell('D2').note.editAs).to.deep.equal(note.editAs);
     });
 
     it('with background image', async () => {
@@ -469,6 +537,81 @@ describe('WorkbookWriter', () => {
       const image = wb2.getImage(backgroundId2);
       const imageData = await fsReadFileAsync(IMAGE_FILENAME);
       expect(Buffer.compare(imageData, image.buffer)).to.equal(0);
+    });
+
+    it('with background image where worksheet is commited in advance', async () => {
+      const options = {
+        filename: TEST_XLSX_FILE_NAME,
+      };
+      const wb = new ExcelJS.stream.xlsx.WorkbookWriter(options);
+      const ws = wb.addWorksheet('Hello');
+
+      const imageId = wb.addImage({
+        filename: IMAGE_FILENAME,
+        extension: 'jpeg',
+      });
+      ws.getCell('A1').value = 'Hello, World!';
+      ws.addBackgroundImage(imageId);
+
+      await ws.commit();
+      await wb.commit();
+
+      const wb2 = new ExcelJS.Workbook();
+      await wb2.xlsx.readFile(TEST_XLSX_FILE_NAME);
+      const ws2 = wb2.getWorksheet('Hello');
+
+      const backgroundId2 = ws2.getBackgroundImageId();
+      const image = wb2.getImage(backgroundId2);
+      const imageData = await fsReadFileAsync(IMAGE_FILENAME);
+      expect(Buffer.compare(imageData, image.buffer)).to.equal(0);
+    });
+
+    it('with conditional formatting', async () => {
+      const options = {
+        filename: TEST_XLSX_FILE_NAME,
+        useStyles: true,
+        useSharedStrings: true,
+      };
+      const wb = testUtils.createTestBook(
+        new ExcelJS.stream.xlsx.WorkbookWriter(options),
+        'xlsx',
+        ['conditionalFormatting']
+      );
+
+      return wb
+        .commit()
+        .then(() => {
+          const wb2 = new ExcelJS.Workbook();
+          return wb2.xlsx.readFile(TEST_XLSX_FILE_NAME);
+        })
+        .then(wb2 => {
+          testUtils.checkTestBook(wb2, 'xlsx', ['conditionalFormatting']);
+        });
+    });
+
+    it('with conditional formatting that contains numFmt (#1814)', async () => {
+      const sheet = 'conditionalFormatting';
+      const options = {filename: TEST_XLSX_FILE_NAME, useStyles: true};
+
+      // generate file with conditional formatting that contains styles with numFmt
+      const wb1 = new ExcelJS.stream.xlsx.WorkbookWriter(options);
+      const ws1 = wb1.addWorksheet(sheet);
+      const cf1 = testUtils.conditionalFormatting.abbreviation;
+      ws1.addConditionalFormatting(cf1);
+      await wb1.commit();
+
+      // read generated file and extract saved conditional formatting rule
+      const wb2 = new ExcelJS.Workbook();
+      await wb2.xlsx.readFile(TEST_XLSX_FILE_NAME);
+      const ws2 = wb2.getWorksheet(sheet);
+      const [cf2] = ws2.conditionalFormattings;
+
+      // verify that rules from generated file contain styles with valid numFmt
+      cf2.rules.forEach(rule => {
+        expect(rule.style.numFmt).to.exist();
+        expect(rule.style.numFmt.id).to.be.a('number');
+        expect(rule.style.numFmt.formatCode).to.be.a('string');
+      });
     });
   });
 });

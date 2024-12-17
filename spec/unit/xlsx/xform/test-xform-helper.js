@@ -1,7 +1,8 @@
-const Sax = require('sax');
+const {PassThrough} = require('readable-stream');
 const {cloneDeep, each} = require('../../../utils/under-dash');
 const CompyXform = require('./compy-xform');
 
+const parseSax = verquire('utils/parse-sax');
 const XmlStream = verquire('utils/xml-stream');
 const BooleanXform = verquire('xlsx/xform/simple/boolean-xform');
 
@@ -76,8 +77,10 @@ const its = {
           child: getExpectation(expectation, 'preparedModel'),
           post: true,
         };
-        const result =
-          `<compy><pre/>${getExpectation(expectation, 'xml')}<post/></compy>`;
+        const result = `<compy><pre/>${getExpectation(
+          expectation,
+          'xml'
+        )}<post/></compy>`;
 
         const xform = new CompyXform({
           tag: 'compy',
@@ -128,10 +131,11 @@ const its = {
             },
           ],
         });
-        const parser = Sax.createStream(true);
-
+        const stream = new PassThrough();
+        stream.write(xml);
+        stream.end();
         xform
-          .parse(parser)
+          .parse(parseSax(stream))
           .then(model => {
             // console.log('parsed Model', JSON.stringify(model));
             // console.log('expected Model', JSON.stringify(result));
@@ -145,7 +149,6 @@ const its = {
             resolve();
           })
           .catch(reject);
-        parser.write(xml);
       }));
   },
 
@@ -155,12 +158,35 @@ const its = {
         const xml = getExpectation(expectation, 'xml');
         const result = getExpectation(expectation, 'parsedModel');
 
-        const parser = Sax.createStream(true);
         const xform = expectation.create();
 
+        const stream = new PassThrough();
+        stream.write(xml);
+        stream.end();
         xform
-          .parse(parser)
+          .parse(parseSax(stream))
           .then(model => {
+            // eliminate the props we have added to our fork
+            if (model && model.stylesXfs) {
+              delete model.stylesXfs;
+            }
+
+            if (model && model.cellStyleXfs) {
+              delete model.cellStyleXfs;
+            }
+
+            if (model && model.cellStyles) {
+              delete model.cellStyles;
+            }
+
+            if (model && model.colors && model.colors.length === 0) {
+              delete model.colors;
+            }
+
+            if (model && model.dxfs && model.dxfs.length === 0) {
+              delete model.dxfs;
+            }
+
             // eliminate the undefined
             const clone = cloneDeep(model, false);
 
@@ -170,8 +196,6 @@ const its = {
             resolve();
           })
           .catch(reject);
-
-        parser.write(xml);
       }));
   },
 

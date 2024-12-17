@@ -10,6 +10,7 @@ const Column = verquire('doc/column');
 
 const testSheets = {
   dataValidations: require('./test-data-validation-sheet'),
+  conditionalFormatting: require('./test-conditional-formatting-sheet'),
   values: require('./test-values-sheet'),
   splice: require('./test-spliced-sheet'),
 };
@@ -53,6 +54,10 @@ module.exports = {
   styles: tools.fix(require('./data/styles.json')),
   properties: tools.fix(require('./data/sheet-properties.json')),
   pageSetup: tools.fix(require('./data/page-setup.json')),
+  conditionalFormatting: tools.fix(
+    require('./data/conditional-formatting.json')
+  ),
+  headerFooter: tools.fix(require('./data/header-footer.json')),
 
   createTestBook(workbook, docType, sheets) {
     const options = getOptions(docType);

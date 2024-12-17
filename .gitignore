@@ -63,3 +63,7 @@ _SpecRunner.html
 
 # Mac files
 .DS_Store
+
+# Ignore xlsx files generated during testing
+*.xlsx
+enpm-lock.yaml
